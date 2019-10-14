@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>产品展示</title>
+    <!--导入bootstrap框架-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!--导入布局js，共享header和footer-->
+    <script type="text/javascript" src="js/include.js"></script>
+    <style>
+        img{
+            width: 350px;
+            height: 400px;
+        }
+        .col-md-4{
+            padding: 10px;
+        }
+    </style>
+    <script>
+        $(function () {
+            findProductCategoryList();
+            findProductList(1,9,null);
+        });
+        //产品类别列表查询请求
+        function findProductCategoryList() {
+            $.ajax({
+                type:"get",// get或者post
+                url:"/productCategory/findList.do",// 请求的url地址
+                data:{},//请求的参数
+                dataType:"json",//json写了jq会帮我们转换成数组或者对象 他已经用JSON.parse弄好了
+                timeout:3000,//3秒后提示错误
+                success:function(data){ // 成功拿到结果放到这个函数 data就是拿到的结果
+                    if(data.flag){
+                        var list=data.data;//查询集合
+                        var productCategoryList=' <span>产品分类：</span>';
+                        for (var i = 0; i < list.length; i++) {
+                            var productCategory='<a href="#" onclick="findProductList(1,9,'+list[i].id+')">'+list[i].name+'</a>&emsp;';
+                            productCategoryList+=productCategory;
+                        }
+                        $("#productCategory").html(productCategoryList);
+                    }else {
+                        alert(data.message);
+                    }
+                }
+            })
+        }
+        //产品列表查询请求
+        function findProductList(currentPage,pageSize,queryString) {
+            $.ajax({
+                type:"get",// get或者post
+                url:"/product/findPage.do",// 请求的url地址
+                data:{currentPage:currentPage,pageSize:pageSize,queryString:queryString},//请求的参数
+                dataType:"json",//json写了jq会帮我们转换成数组或者对象 他已经用JSON.parse弄好了
+                timeout:3000,//3秒后提示错误
+                success:function(data){ // 成功拿到结果放到这个函数 data就是拿到的结果
+                    if(data.flag){
+                        var total=data.data.total;//总记录数
+                        var list=data.data.rows;//查询集合
+                        var productList='';
+                        for (var i = 0; i < list.length; i++) {
+                            var product='<div class="col-md-4" id="'+list[i].id+'">\n' +
+                                '                <a href="ChanPin.html?id='+list[i].id+'">\n' +
+                                '                    <img src="img/index.jpg">\n' +
+                                '                </a>\n' +
+                                '                <p><span>名称：</span><span>'+list[i].name+'</span></p>\n' +
+                                '                <p><span>点击次数：</span><span>'+list[i].count+'</span></p>\n' +
+                                '            </div>';
+                            productList+=product;
+                        }
+                        $("#productList").html(productList);
+                    }else {
+                        alert(data.message);
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<!--引用头部-->
+<div id="header"></div>
+<div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <h4>产品展示></h4>
+        </div>
+    </div>
+    <hr>
+    <div class="container-fluid">
+        <div class="row" id="productCategory">
+            <span>产品分类：</span>
+            <a href="#">机械</a>
+            <a href="#">电子</a>
+            <a href="#">科技</a>
+            <a href="#">生物</a>
+        </div>
+    </div>
+    <hr>
+    <div class="container-fluid">
+        <div class="row" id="productList">
+            <div class="col-md-4">
+                <a href="ChanPin.html">
+                    <img src="img/index.jpg">
+                </a>
+                <p><span>名称：</span><span>科技1号</span></p>
+                <p><span>点击次数：</span><span>1</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

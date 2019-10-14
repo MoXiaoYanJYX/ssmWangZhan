@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>新闻中心</title>
+    <!--导入bootstrap框架-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!--导入布局js，共享header和footer-->
+    <script type="text/javascript" src="js/include.js"></script>
+    <style>
+        .XinWen{
+            font-size: 17px;
+            margin-top: 5px;
+        }
+    </style>
+    <script>
+        $(function () {
+            findNewsCategoryList();
+            findNewsList(1,9,null);
+        });
+        //查询新闻列表
+        function findNewsCategoryList() {
+            $.ajax({
+                type:"get",// get或者post
+                url:"/newsCategory/findList.do",// 请求的url地址
+                data:{},//请求的参数
+                dataType:"json",//json写了jq会帮我们转换成数组或者对象 他已经用JSON.parse弄好了
+                timeout:3000,//3秒后提示错误
+                success:function(data){ // 成功拿到结果放到这个函数 data就是拿到的结果
+                    if(data.flag){
+                        var list=data.data;//查询集合
+                        var NewsCategoryList='<span>新闻分类：</span>';
+                        for (var i = 0; i < list.length; i++) {
+                            var NewsCategory='<a href="#" onclick="findNewsListList(1,9,'+list[i].id+')">'+list[i].name+'</a>&emsp;';
+                            NewsCategoryList+=NewsCategory;
+                        }
+                        $("#NewsCategoryList").html(NewsCategoryList);
+                    }else {
+                        alert(data.message);
+                    }
+                }
+            })
+        }
+        //查询新闻列表
+        function findNewsList(currentPage,pageSize,queryString) {
+            $.ajax({
+                type:"get",// get或者post
+                url:"/news/findList.do",// 请求的url地址
+                data:{currentPage:currentPage,pageSize:pageSize,queryString:queryString},//请求的参数
+                dataType:"json",//json写了jq会帮我们转换成数组或者对象 他已经用JSON.parse弄好了
+                timeout:3000,//3秒后提示错误
+                success:function(data){ // 成功拿到结果放到这个函数 data就是拿到的结果
+                    if(data.flag){
+                        var list=data.data.rows;//查询集合
+                        var NewsList=' <span>产品分类：</span>';
+                        for (var i = 0; i < list.length; i++) {
+                            var News='<li class="XinWen"><a href="XinWen.html">'+list[i].name+'</a>&emsp;&emsp;&emsp;&emsp;<span>点击次数：</span><span>'+list[i].count+'</span>&emsp;&emsp;<span>发布时间：</span><span>'+list[i].date+'</span></li>';
+                            NewsList+=News;
+                        }
+                        $("#NewsList").html(NewsList);
+                    }else {
+                        alert(data.message);
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<!--引用头部-->
+<div id="header"></div>
+<div class="container">
+    <div class="container-fluid">
+        <div class="row">
+            <h4><a href="#">新闻中心</a>>></h4>
+        </div>
+    </div>
+    <hr>
+    <div class="container-fluid">
+        <div class="row" id="NewsCategoryList">
+            <span>新闻分类：</span>
+            <a href="#">公司公告</a>
+            <a href="#">内部新闻</a>
+            <a href="#">政府新闻</a>
+        </div>
+    </div>
+    <hr>
+    <div class="container-fluid">
+        <div class="row">
+            <ul id="NewsList">
+                <li class="XinWen"><a href="XinWen.html">上海人民庆祝中华人民共和国成立70周年文艺晚会举行</a>&emsp;&emsp;&emsp;&emsp;<span>点击次数：</span><span>1</span>&emsp;&emsp;<span>发布时间：</span><span>2019-09-27</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
